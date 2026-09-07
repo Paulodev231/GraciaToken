@@ -1,53 +1,26 @@
-import 'lenis/dist/lenis.css';
 import './fonts.css';
 import './styles.css';
 
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
 
 import { createScene } from './three/scene.js';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const root = document.documentElement;
 root.classList.remove('no-js');
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ══════════════════════════════════════════════════════════════
-   Smooth scroll
-   ══════════════════════════════════════════════════════════════ */
-
+/**
+ * Lenis and ScrollTrigger are loaded only when motion is allowed. That is not
+ * just about bytes: importing ScrollTrigger self-registers it with GSAP, which
+ * keeps a requestAnimationFrame loop running for the life of the page. A
+ * reader who asked for no motion should get a still frame and an idle CPU.
+ */
 let lenis = null;
-
-if (!reducedMotion) {
-  lenis = new Lenis({
-    duration: 1.05,
-    lerp: 0.1,
-    smoothWheel: true,
-    // Native momentum on touch is better than anything we'd fake, and it
-    // costs nothing on the devices that matter most here.
-    syncTouch: false,
-  });
-
-  lenis.on('scroll', ScrollTrigger.update);
-
-  gsap.ticker.add((time) => lenis.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
-}
-
-function scrollToTarget(target) {
-  const el = typeof target === 'string' ? document.querySelector(target) : target;
-  if (!el) return;
-  const offset = -(document.getElementById('nav')?.offsetHeight ?? 0) - 8;
-
-  if (lenis) lenis.scrollTo(el, { offset, duration: 1.15 });
-  else el.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
-}
+let ScrollTrigger = null;
 
 /* ══════════════════════════════════════════════════════════════
-   WebGL backdrop
+   Scene
    ══════════════════════════════════════════════════════════════ */
 
 /**
@@ -97,113 +70,93 @@ const view = canvas ? createScene(canvas, { reducedMotion }) : null;
 if (!view) {
   root.classList.add('no-webgl');
   canvas?.remove();
-} else {
-  const { pose } = view;
-
-  if (reducedMotion) {
-    // A single, composed still: coin three-quarters on, light already swept to
-    // where it flatters the bevel most.
-    Object.assign(pose, WAYPOINTS[0].pose, {
-      camZ: 6.9,
-      camY: 0.12,
-      coinX: 1.35,
-      coinY: -0.6,
-      rotX: -0.16,
-      rotY: 0.52,
-      light: 0.25,
-      env: 0.35,
-    });
-    view.renderOnce();
-    canvas.classList.add('is-ready');
-  } else {
-    view.start();
-    requestAnimationFrame(() => canvas.classList.add('is-ready'));
-
-    /* ── The scrubbed camera timeline ────────────────────────────
-       One scrubbed timeline across the whole document, its keyframes placed at
-       the scroll progress where each section actually sits rather than at
-       guessed weights — sections are nowhere near equal in height, and a
-       keyframe half a screen out puts the coin behind the copy. */
-    let flight = null;
-
-    const scrollMax = () =>
-      Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-
-    function progressOf(selector, index, count) {
-      if (index === 0) return 0;
-      if (index === count - 1) return 1;
-
-      const el = document.querySelector(selector);
-      if (!el) return index / (count - 1);
-
-      const rect = el.getBoundingClientRect();
-      const centre = rect.top + window.scrollY + rect.height / 2 - window.innerHeight / 2;
-      return gsap.utils.clamp(0, 1, centre / scrollMax());
-    }
-
-    function buildFlight() {
-      flight?.scrollTrigger?.kill();
-      flight?.kill();
-
-      const marks = WAYPOINTS.map((w, i) => progressOf(w.at, i, WAYPOINTS.length));
-
-      // Keep the marks strictly increasing; a zero-length tween would stall the
-      // scrub on very short viewports.
-      for (let i = 1; i < marks.length; i++) {
-        marks[i] = Math.max(marks[i], marks[i - 1] + 0.02);
-      }
-      const span = marks[marks.length - 1];
-
-      Object.assign(pose, WAYPOINTS[0].pose);
-
-      flight = gsap.timeline({
-        defaults: { ease: 'sine.inOut' },
-        scrollTrigger: {
-          trigger: document.body,
-          start: 0,
-          end: 'max',
-          scrub: 1.1,
-        },
-      });
-
-      for (let i = 1; i < WAYPOINTS.length; i++) {
-        const from = marks[i - 1] / span;
-        const to = marks[i] / span;
-        flight.to(pose, { ...WAYPOINTS[i].pose, duration: to - from }, from);
-      }
-    }
-
-    buildFlight();
-    view.rebuild = buildFlight;
-  }
-
-  const onResize = () => {
-    view.resize();
-    if (reducedMotion) view.renderOnce();
-  };
-
-  let resizeTimer = 0;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      onResize();
-      view.rebuild?.();
-      ScrollTrigger.refresh();
-    }, 140);
-  });
-  window.addEventListener('orientationchange', onResize);
 }
 
 /* ══════════════════════════════════════════════════════════════
-   Reveals
+   Distribution bars
    ══════════════════════════════════════════════════════════════ */
 
-const revealables = gsap.utils.toArray('[data-reveal]');
+const format = (n) => (Number.isInteger(n) ? `${n}%` : `${n.toFixed(1)}%`);
 
-if (reducedMotion) {
-  revealables.forEach((el) => el.classList.add('is-revealed'));
-} else {
-  revealables.forEach((el) => {
+const bars = [...document.querySelectorAll('#bars .bar')];
+
+function setBar(bar, ratio) {
+  const value = Number(bar.dataset.value);
+  bar.querySelector('.bar__fill').style.width = `${value * ratio}%`;
+  bar.querySelector('.bar__pct').textContent = format(value * ratio);
+}
+
+bars.forEach((bar) => {
+  const value = Number(bar.dataset.value);
+  const name = bar.querySelector('.bar__name').textContent.trim();
+  const track = bar.querySelector('.bar__track');
+  track.setAttribute('role', 'img');
+  track.setAttribute('aria-label', `${name}: ${format(value)} of total supply`);
+});
+
+/* ══════════════════════════════════════════════════════════════
+   Still page — no motion asked for, none given
+   ══════════════════════════════════════════════════════════════ */
+
+function initStill() {
+  document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-revealed'));
+  bars.forEach((bar) => setBar(bar, 1));
+
+  if (!view) return;
+
+  // One composed still: coin three-quarters on, light already swept to where
+  // it flatters the bevel most.
+  Object.assign(view.pose, WAYPOINTS[0].pose, {
+    camZ: 6.9,
+    camY: 0.12,
+    coinX: 1.35,
+    coinY: -0.6,
+    rotX: -0.16,
+    rotY: 0.52,
+    light: 0.25,
+    env: 0.35,
+  });
+  view.renderOnce();
+  canvas.classList.add('is-ready');
+
+  let timer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      view.resize();
+      view.renderOnce();
+    }, 140);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Moving page
+   ══════════════════════════════════════════════════════════════ */
+
+async function initMotion() {
+  const [{ ScrollTrigger: Trigger }, { default: Lenis }] = await Promise.all([
+    import('gsap/ScrollTrigger'),
+    import('lenis'),
+  ]);
+
+  ScrollTrigger = Trigger;
+  gsap.registerPlugin(ScrollTrigger);
+
+  lenis = new Lenis({
+    duration: 1.05,
+    lerp: 0.1,
+    smoothWheel: true,
+    // Native momentum on touch beats anything we'd fake, and it costs nothing
+    // on the devices that matter most here.
+    syncTouch: false,
+  });
+
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  /* ── Reveals ──────────────────────────────────────────────── */
+  document.querySelectorAll('[data-reveal]').forEach((el) => {
     const stagger = Number(el.dataset.stagger || 0);
     gsap.to(el, {
       opacity: 1,
@@ -215,46 +168,100 @@ if (reducedMotion) {
       onComplete: () => el.classList.add('is-revealed'),
     });
   });
-}
 
-/* ══════════════════════════════════════════════════════════════
-   Distribution bars
-   ══════════════════════════════════════════════════════════════ */
+  /* ── Bars fill and count up ───────────────────────────────── */
+  bars.forEach((bar) => {
+    const counter = { ratio: 0 };
+    gsap.to(counter, {
+      ratio: 1,
+      duration: 1.6,
+      ease: 'power2.out',
+      onUpdate: () => setBar(bar, counter.ratio),
+      scrollTrigger: { trigger: bar, start: 'top 90%', once: true },
+    });
+  });
 
-const format = (n) => (Number.isInteger(n) ? `${n}%` : `${n.toFixed(1)}%`);
-
-function setBar(bar, ratio) {
-  const value = Number(bar.dataset.value);
-  const fill = bar.querySelector('.bar__fill');
-  const pct = bar.querySelector('.bar__pct');
-  fill.style.width = `${value * ratio}%`;
-  pct.textContent = format(value * ratio);
-}
-
-const bars = gsap.utils.toArray('#bars .bar');
-
-bars.forEach((bar) => {
-  const value = Number(bar.dataset.value);
-  const track = bar.querySelector('.bar__track');
-  const name = bar.querySelector('.bar__name').textContent.trim();
-
-  track.setAttribute('role', 'img');
-  track.setAttribute('aria-label', `${name}: ${format(value)} of total supply`);
-
-  if (reducedMotion) {
-    setBar(bar, 1);
+  if (!view) {
+    window.addEventListener('load', () => ScrollTrigger.refresh());
     return;
   }
 
-  const counter = { ratio: 0 };
-  gsap.to(counter, {
-    ratio: 1,
-    duration: 1.6,
-    ease: 'power2.out',
-    onUpdate: () => setBar(bar, counter.ratio),
-    scrollTrigger: { trigger: bar, start: 'top 90%', once: true },
+  /* ── The scrubbed camera timeline ─────────────────────────────
+     One scrubbed timeline across the whole document, its keyframes placed at
+     the scroll progress where each section actually sits rather than at
+     guessed weights — sections are nowhere near equal in height, and a
+     keyframe half a screen out puts the coin behind the copy instead of
+     beside it. */
+  const { pose } = view;
+  let flight = null;
+
+  const scrollMax = () => Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+
+  function progressOf(selector, index, count) {
+    if (index === 0) return 0;
+    if (index === count - 1) return 1;
+
+    const el = document.querySelector(selector);
+    if (!el) return index / (count - 1);
+
+    const rect = el.getBoundingClientRect();
+    const centre = rect.top + window.scrollY + rect.height / 2 - window.innerHeight / 2;
+    return gsap.utils.clamp(0, 1, centre / scrollMax());
+  }
+
+  function buildFlight() {
+    flight?.scrollTrigger?.kill();
+    flight?.kill();
+
+    const marks = WAYPOINTS.map((w, i) => progressOf(w.at, i, WAYPOINTS.length));
+
+    // Keep the marks strictly increasing; a zero-length tween would stall the
+    // scrub on very short viewports.
+    for (let i = 1; i < marks.length; i++) {
+      marks[i] = Math.max(marks[i], marks[i - 1] + 0.02);
+    }
+    const span = marks[marks.length - 1];
+
+    Object.assign(pose, WAYPOINTS[0].pose);
+
+    flight = gsap.timeline({
+      defaults: { ease: 'sine.inOut' },
+      scrollTrigger: { trigger: document.body, start: 0, end: 'max', scrub: 1.1 },
+    });
+
+    for (let i = 1; i < WAYPOINTS.length; i++) {
+      const from = marks[i - 1] / span;
+      const to = marks[i] / span;
+      flight.to(pose, { ...WAYPOINTS[i].pose, duration: to - from }, from);
+    }
+  }
+
+  view.start();
+  requestAnimationFrame(() => canvas.classList.add('is-ready'));
+  buildFlight();
+
+  const relayout = () => {
+    buildFlight();
+    ScrollTrigger.refresh();
+  };
+
+  let timer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      view.resize();
+      relayout();
+    }, 140);
   });
-});
+  window.addEventListener('orientationchange', () => view.resize());
+
+  // Late-loading webfonts change text metrics, which moves every trigger.
+  document.fonts?.ready.then(relayout);
+  window.addEventListener('load', relayout);
+}
+
+if (reducedMotion) initStill();
+else initMotion();
 
 /* ══════════════════════════════════════════════════════════════
    Contract address
@@ -271,8 +278,8 @@ if (addressEl) {
   addressEl.setAttribute('title', full);
 
   const fit = () => {
-    // Below ~420px even 12px monospace can't hold 42 characters, so show the
-    // ends — the parts anyone actually eyeballs — and keep the full string in
+    // Below ~420px even small monospace cannot hold 42 characters, so show the
+    // ends — the parts anyone actually eyeballs — and keep the whole string in
     // the clipboard, the title and the copy button.
     if (window.innerWidth < 420) {
       addressEl.textContent = `${full.slice(0, 12)}…${full.slice(-10)}`;
@@ -324,7 +331,7 @@ if (copyBtn) {
   copyBtn.addEventListener('click', async () => {
     const ok = await writeClipboard(copyBtn.dataset.copy);
 
-    copyLabel.textContent = ok ? 'Copied' : 'Press ⌘C';
+    copyLabel.textContent = ok ? 'Copied' : 'Select to copy';
     copyBtn.classList.toggle('is-copied', ok);
     copyStatus.textContent = ok
       ? 'Contract address copied to clipboard'
@@ -374,7 +381,8 @@ if (navToggle && navLinks) {
   });
 }
 
-// In-page anchors go through Lenis so the smooth scroll stays consistent.
+// In-page anchors route through Lenis when it is running, so the smooth scroll
+// stays consistent with the rest of the page.
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
   const href = link.getAttribute('href');
   if (!href || href === '#') return;
@@ -382,9 +390,18 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
   link.addEventListener('click', (event) => {
     const target = document.querySelector(href);
     if (!target) return;
+
     event.preventDefault();
     closeMenu();
-    scrollToTarget(target);
+
+    // Both paths honour the section's scroll-margin-top, which is what clears
+    // the fixed bar — adding a nav-height offset here would double-count it.
+    if (lenis) {
+      lenis.scrollTo(target, { duration: 1.15 });
+    } else {
+      target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+    }
+
     // Keep the keyboard where the eye went.
     target.setAttribute('tabindex', '-1');
     target.focus({ preventScroll: true });
@@ -397,21 +414,5 @@ if (nav) {
   window.addEventListener('scroll', onScroll, { passive: true });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   Misc
-   ══════════════════════════════════════════════════════════════ */
-
 const year = document.getElementById('year');
 if (year) year.textContent = String(new Date().getFullYear());
-
-// Late-loading webfonts change text metrics, which moves every trigger.
-function relayout() {
-  view?.rebuild?.();
-  ScrollTrigger.refresh();
-}
-
-if (document.fonts?.ready) {
-  document.fonts.ready.then(relayout);
-}
-
-window.addEventListener('load', relayout);

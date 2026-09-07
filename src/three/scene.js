@@ -120,7 +120,7 @@ export function createScene(canvas, { reducedMotion = false } = {}) {
   composer.addPass(new RenderPass(scene, camera));
 
   // Subtle: the highlights should bleed, not the whole coin.
-  const bloom = new UnrealBloomPass(new Vector2(1, 1), 0.26, 0.42, 0.88);
+  const bloom = new UnrealBloomPass(new Vector2(1, 1), 0.21, 0.35, 0.9);
   // Blur at a fraction of the output resolution. The composite still lands at
   // full size, so this is nearly free quality-wise and very much not free
   // perf-wise on a phone.
@@ -139,6 +139,7 @@ export function createScene(canvas, { reducedMotion = false } = {}) {
   let height = 1;
   let frameScale = 1;
   let spread = 1;
+  let drop = 0;
   let bloomEnabled = true;
   let running = false;
   let rafId = 0;
@@ -170,6 +171,11 @@ export function createScene(canvas, { reducedMotion = false } = {}) {
     // simply sits further back.
     spread = MathUtils.clamp(aspect * 0.95, 0.42, 1.5);
 
+    // On a phone there is no "beside the copy" — the column is the screen. So
+    // instead of parking the coin to one side, sink it below the reading band
+    // and take some light out of it.
+    drop = MathUtils.clamp((1.05 - aspect) * 2.0, 0, 1.5);
+
     renderer.setSize(width, height, false);
     composer.setSize(width, height);
     applyPixelRatio(Math.min(window.devicePixelRatio || 1, profile.maxPixelRatio));
@@ -190,7 +196,7 @@ export function createScene(canvas, { reducedMotion = false } = {}) {
 
     // Coin — scroll pose plus a slow breath, and an idle turn about its own
     // face so the relief never sits perfectly still.
-    coin.root.position.set(coinX, pose.coinY, pose.coinZ);
+    coin.root.position.set(coinX, pose.coinY - drop, pose.coinZ);
     coin.root.rotation.x = pose.rotX + Math.sin(elapsed * 0.23) * 0.035;
     coin.root.rotation.y = pose.rotY + Math.sin(elapsed * 0.17) * 0.05;
     coin.root.rotation.z = pose.rotZ;
@@ -200,11 +206,12 @@ export function createScene(canvas, { reducedMotion = false } = {}) {
     // Key light sweeps around the coin as the page advances.
     const a = pose.light;
     key.position.set(Math.cos(a) * 5.5, 2.2 + Math.sin(a * 0.85) * 2.4, Math.sin(a) * 3.2 + 4.2);
-    key.intensity = (1.35 + Math.sin(a * 1.4) * 0.35) * pose.glow;
+    const glow = pose.glow * (1 - drop * 0.14);
+    key.intensity = (1.35 + Math.sin(a * 1.4) * 0.35) * glow;
 
     // ...and the whole studio turns with it, so the reflections travel too.
     scene.environmentRotation.y = pose.env;
-    scene.environmentIntensity = pose.glow;
+    scene.environmentIntensity = glow;
 
     dust.update(elapsed);
 

@@ -49,6 +49,22 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Lenis is loaded only when motion is allowed; these are inert until it adds
+   its classes to <html>, so they live here rather than in a lazy CSS chunk. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   min-height: 100%;
@@ -181,6 +197,13 @@ main,
 }
 .shell--narrow {
   max-width: 780px;
+}
+
+/* Anchor jumps clear the fixed bar. Lenis honours this too, so it is the one
+   place the offset is expressed. */
+.section,
+.hero {
+  scroll-margin-top: 88px;
 }
 
 .section {
@@ -838,6 +861,8 @@ main,
 .stat__value {
   margin: 0;
   font-family: var(--serif);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: 'lnum' 1, 'tnum' 1;
   font-size: clamp(1.85rem, 7.4vw, 2.5rem);
   font-weight: 500;
   line-height: 1.1;
@@ -891,7 +916,8 @@ main,
   font-family: var(--serif);
   font-size: clamp(1.1rem, 4.4vw, 1.4rem);
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: 'lnum' 1, 'tnum' 1;
   color: var(--gold);
   white-space: nowrap;
 }
