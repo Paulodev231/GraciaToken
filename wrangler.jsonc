@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "graciatoken",
+  "compatibility_date": "2025-09-01",
+
+  // An assets-only Worker: there is no server-side code, just the static build
+  // that `npm run build` writes to dist/. `_headers` inside that directory is
+  // honoured, so the caching rules ship with the site.
+  "assets": {
+    "directory": "./dist",
+    // Unknown paths return a real 404 rather than quietly serving the homepage,
+    // which would make every typo look like a live page to search engines.
+    "not_found_handling": "none"
+  }
+}
