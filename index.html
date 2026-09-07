@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#070A08" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>Gracia Token ($GRACIA) — Grace Meets Gain</title>
+    <meta
+      name="description"
+      content="Gracia Token is a BNB Smart Chain token with a charitable purpose — channelling real value into rehabilitation, education and reintegration programmes for inmates."
+    />
+    <link rel="canonical" href="https://graciatoken.com/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gracia Token" />
+    <meta property="og:title" content="Gracia Token ($GRACIA) — Grace Meets Gain" />
+    <meta
+      property="og:description"
+      content="More than a cryptocurrency — a mission with impact. Built on BNB Smart Chain to fund rehabilitation, education and reintegration programmes for inmates."
+    />
+    <meta property="og:url" content="https://graciatoken.com/" />
+    <meta property="og:image" content="https://graciatoken.com/images/logo.jpg" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+    <meta property="og:image:alt" content="The Gracia Token emblem — gold wings on a dark tile." />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@GraciaTokenBSC" />
+    <meta name="twitter:title" content="Gracia Token ($GRACIA) — Grace Meets Gain" />
+    <meta
+      name="twitter:description"
+      content="More than a cryptocurrency — a mission with impact. Built on BNB Smart Chain to fund rehabilitation, education and reintegration programmes for inmates."
+    />
+    <meta name="twitter:image" content="https://graciatoken.com/images/logo.jpg" />
+    <meta name="twitter:image:alt" content="The Gracia Token emblem — gold wings on a dark tile." />
+
+    <link rel="icon" href="./images/logo.jpg" />
+    <link rel="apple-touch-icon" href="./images/logo.jpg" />
+
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/cormorant-garamond-latin.woff2"
+      crossorigin
+    />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+    <link rel="preload" as="image" href="./images/logo.jpg" />
+
+    <script type="module" crossorigin src="/src/main.js"></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#hero">Skip to content</a>
+
+    <!-- Fixed WebGL backdrop: gold coin + drifting dust -->
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div class="scene-veil" aria-hidden="true"></div>
+
+    <header class="nav" id="nav">
+      <div class="nav__inner">
+        <a class="wordmark" href="#hero" aria-label="Gracia Token — home">GRACIA</a>
+
+        <nav class="nav__links" id="nav-links" aria-label="Primary">
+          <a href="#vision">Vision</a>
+          <a href="#tokenomics">Tokenomics</a>
+          <a href="#impact">Impact</a>
+          <a href="#community">Community</a>
+        </nav>
+
+        <button
+          class="nav__toggle"
+          id="nav-toggle"
+          type="button"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="nav-links"
+        >
+          <span class="nav__bar"></span>
+          <span class="nav__bar"></span>
+          <span class="nav__bar"></span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ── Hero ───────────────────────────────────────────────── -->
+      <section class="hero" id="hero">
+        <div class="shell hero__inner">
+          <div class="hero__mark reveal" data-reveal>
+            <img
+              src="./images/logo.jpg"
+              width="512"
+              height="512"
+              alt="Gracia Token emblem: gold wings above the words Gracia Token."
+              class="hero__logo"
+              fetchpriority="high"
+              decoding="async"
+            />
+          </div>
+
+          <p class="eyebrow reveal" data-reveal>BSC Blockchain &middot; $GRACIA</p>
+
+          <h1 class="display reveal" data-reveal>Gracia Token</h1>
+
+          <p class="tagline reveal" data-reveal>Grace Meets Gain</p>
+
+          <p class="lede reveal" data-reveal>
+            More than a cryptocurrency — a mission with impact. Built on the belief that everyone
+            deserves a second chance, Gracia Token channels real value into rehabilitation,
+            education and reintegration programmes.
+          </p>
+
+          <div class="hero__actions reveal" data-reveal>
+            <a
+              class="btn btn--gold"
+              href="https://t.me/GraciaToken"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Join the Movement</a
+            >
+            <a class="btn btn--glass" href="#tokenomics" data-scroll-to="#tokenomics"
+              >View Tokenomics</a
+            >
+          </div>
+        </div>
+
+        <div class="hero__scroll" aria-hidden="true">
+          <span class="hero__scroll-line"></span>
+          <span class="hero__scroll-label">Scroll</span>
+        </div>
+      </section>
+
+      <!-- ── Contract ───────────────────────────────────────────── -->
+      <section class="section section--tight" id="contract" aria-labelledby="contract-title">
+        <div class="shell">
+          <div class="panel contract reveal" data-reveal>
+            <div class="contract__head">
+              <p class="label" id="contract-title">Contract Address</p>
+              <p class="contract__chain"><span class="dot" aria-hidden="true"></span>BNB Smart Chain (BEP-20)</p>
+            </div>
+
+            <div class="contract__row">
+              <code class="contract__value" id="contract-address" translate="no"
+                >0x8B4E7b09c4c88fAA543945910437c831deC9A91b</code
+              >
+              <button
+                class="btn btn--copy"
+                id="copy-btn"
+                type="button"
+                data-copy="0x8B4E7b09c4c88fAA543945910437c831deC9A91b"
+                aria-label="Copy contract address"
+              >
+                <span class="btn__copy-label" id="copy-label">Copy</span>
+              </button>
+            </div>
+
+            <p class="contract__note">
+              Always verify the address before you transact. Gracia Token has one contract, and this
+              is it.
+            </p>
+            <p class="sr-only" role="status" aria-live="polite" id="copy-status"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Vision ─────────────────────────────────────────────── -->
+      <section class="section" id="vision" aria-labelledby="vision-title">
+        <div class="shell shell--narrow">
+          <p class="label reveal" data-reveal>The Vision</p>
+          <h2 class="heading reveal" data-reveal id="vision-title">
+            Bridging blockchain and humanitarian impact
+          </h2>
+          <div class="prose">
+            <p class="reveal" data-reveal>
+              Gracia Token exists to close the distance between financial innovation and human
+              restoration. Every transaction contributes to a treasury with a stated purpose, and
+              every allocation is recorded on a public ledger that anyone can read. Transparency is
+              not a promise here — it is the mechanism.
+            </p>
+            <p class="reveal" data-reveal>
+              We hold ourselves to the standards of the institutions we admire: accountability in
+              how funds are held, clarity in how they are spent, and compassion in who they reach.
+              Grace is the intent. Gain is the means. Both are measured.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Pillars / Impact ───────────────────────────────────── -->
+      <section class="section" id="impact" aria-labelledby="impact-title">
+        <div class="shell">
+          <div class="section__head">
+            <p class="label reveal" data-reveal>Our Foundation</p>
+            <h2 class="heading reveal" data-reveal id="impact-title">The Three Pillars</h2>
+          </div>
+
+          <ul class="pillars" role="list">
+            <li class="panel pillar reveal" data-reveal data-stagger="0">
+              <span class="pillar__icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.1"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 38h36" />
+                  <ellipse cx="14" cy="30.5" rx="6" ry="2.2" />
+                  <path d="M8 30.5V36c0 1.2 2.7 2.2 6 2.2s6-1 6-2.2v-5.5" />
+                  <ellipse cx="26" cy="24.5" rx="6" ry="2.2" />
+                  <path d="M20 24.5V36c0 1.2 2.7 2.2 6 2.2s6-1 6-2.2V24.5" />
+                  <ellipse cx="38" cy="18.5" rx="6" ry="2.2" />
+                  <path d="M32 18.5V36c0 1.2 2.7 2.2 6 2.2s6-1 6-2.2V18.5" />
+                  <path d="M9 20.5 18 13l6.5 5L36 7.5" />
+                  <path d="M29.5 7h7v7" />
+                </svg>
+              </span>
+              <h3 class="pillar__title">Wealth Transfer</h3>
+              <p class="pillar__body">
+                Empowering financial freedom through community-driven value exchange.
+              </p>
+            </li>
+
+            <li class="panel pillar reveal" data-reveal data-stagger="1">
+              <span class="pillar__icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.1"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M24 32c-5.6-4.1-10.7-8.4-10.7-13.8A5.6 5.6 0 0 1 24 14.7a5.6 5.6 0 0 1 10.7 3.5C34.7 23.6 29.6 27.9 24 32Z" />
+                  <path d="M8.5 28.5c-1.5 6.2 2.3 12 8.6 13 4.5.7 9.3.7 13.8 0 6.3-1 10.1-6.8 8.6-13" />
+                </svg>
+              </span>
+              <h3 class="pillar__title">Social Impact</h3>
+              <p class="pillar__body">
+                Supporting and funding rehabilitation, education and reintegration programmes for
+                inmates.
+              </p>
+            </li>
+
+            <li class="panel pillar reveal" data-reveal data-stagger="2">
+              <span class="pillar__icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.1"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M24 5.5 33 11v10.5L24 27l-9-5.5V11l9-5.5Z" />
+                  <path d="M15 11l9 5.5L33 11M24 16.5V27" />
+                  <path d="M13 24.5 22 30v10.5L13 46l-9-5.5V30l9-5.5Z" />
+                  <path d="M4 30l9 5.5L22 30M13 35.5V46" />
+                  <path d="M35 24.5 44 30v10.5L35 46l-9-5.5V30l9-5.5Z" />
+                  <path d="M26 30l9 5.5L44 30M35 35.5V46" />
+                </svg>
+              </span>
+              <h3 class="pillar__title">Blockchain Innovation</h3>
+              <p class="pillar__body">
+                Building the future with secure, transparent, decentralised solutions.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ── Tokenomics ─────────────────────────────────────────── -->
+      <section class="section tokenomics" id="tokenomics" aria-labelledby="tokenomics-title">
+        <img
+          class="tokenomics__art"
+          src="./images/coin-art.jpg"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          width="640"
+          height="640"
+        />
+
+        <div class="shell">
+          <div class="section__head">
+            <p class="label reveal" data-reveal>Tokenomics</p>
+            <h2 class="heading reveal" data-reveal id="tokenomics-title">
+              The <span class="ticker">$GRACIA</span> Blueprint
+            </h2>
+          </div>
+
+          <ul class="stats" role="list">
+            <li class="panel stat reveal" data-reveal data-stagger="0">
+              <p class="stat__label">Total Supply</p>
+              <p class="stat__value">500,000,000</p>
+              <p class="stat__meta">$GRACIA, fixed</p>
+            </li>
+            <li class="panel stat reveal" data-reveal data-stagger="1">
+              <p class="stat__label">Liquidity</p>
+              <p class="stat__value">100% Locked</p>
+              <p class="stat__meta">2 years</p>
+            </li>
+            <li class="panel stat reveal" data-reveal data-stagger="2">
+              <p class="stat__label">Transaction Tax</p>
+              <p class="stat__value">3 / 3</p>
+              <p class="stat__meta">Buy and sell</p>
+            </li>
+          </ul>
+
+          <div class="panel dist reveal" data-reveal>
+            <p class="label dist__label">Distribution</p>
+
+            <ul class="bars" role="list" id="bars">
+              <li class="bar" data-value="50">
+                <div class="bar__head">
+                  <span class="bar__name">Liquidity</span>
+                  <span class="bar__pct" data-count="50">0%</span>
+                </div>
+                <div class="bar__track"><span class="bar__fill"></span></div>
+              </li>
+              <li class="bar" data-value="32.6">
+                <div class="bar__head">
+                  <span class="bar__name">Burned</span>
+                  <span class="bar__pct" data-count="32.6">0%</span>
+                </div>
+                <div class="bar__track"><span class="bar__fill"></span></div>
+              </li>
+              <li class="bar" data-value="8.4">
+                <div class="bar__head">
+                  <span class="bar__name">Charity Wallet</span>
+                  <span class="bar__pct" data-count="8.4">0%</span>
+                </div>
+                <div class="bar__track"><span class="bar__fill"></span></div>
+              </li>
+              <li class="bar" data-value="6">
+                <div class="bar__head">
+                  <span class="bar__name">Marketing &amp; Viral Growth</span>
+                  <span class="bar__pct" data-count="6">0%</span>
+                </div>
+                <div class="bar__track"><span class="bar__fill"></span></div>
+              </li>
+              <li class="bar" data-value="3">
+                <div class="bar__head">
+                  <span class="bar__name">Team &amp; Development</span>
+                  <span class="bar__pct" data-count="3">0%</span>
+                </div>
+                <div class="bar__track"><span class="bar__fill"></span></div>
+                <p class="bar__note">Locked 2 months from launch</p>
+              </li>
+            </ul>
+
+            <p class="dist__foot">
+              The 3% transaction tax splits as 3% liquidity and 3% marketing.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Community ──────────────────────────────────────────── -->
+      <section class="section" id="community" aria-labelledby="community-title">
+        <div class="shell shell--narrow">
+          <div class="section__head">
+            <p class="label reveal" data-reveal>Community</p>
+            <h2 class="heading reveal" data-reveal id="community-title">Stand with the mission</h2>
+            <p class="prose reveal" data-reveal>
+              Progress is public. Join the rooms where the work, the wallets and the programmes are
+              discussed openly.
+            </p>
+          </div>
+
+          <div class="social">
+            <a
+              class="panel social__card reveal"
+              data-reveal
+              data-stagger="0"
+              href="https://x.com/GraciaTokenBSC"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="social__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"
+                  />
+                </svg>
+              </span>
+              <span class="social__text">
+                <span class="social__name">X</span>
+                <span class="social__handle">@GraciaTokenBSC</span>
+              </span>
+              <span class="social__arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 17 17 7M9 7h8v8" />
+                </svg>
+              </span>
+            </a>
+
+            <a
+              class="panel social__card reveal"
+              data-reveal
+              data-stagger="1"
+              href="https://t.me/GraciaToken"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="social__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M21.9 4.32 18.6 19.9c-.25 1.1-.9 1.37-1.83.85l-5.05-3.72-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.15 9.37-8.47c.4-.36-.09-.56-.63-.2L5.78 13.36.79 11.8c-1.08-.34-1.1-1.08.23-1.6L20.5 2.73c.9-.33 1.69.21 1.4 1.59Z"
+                  />
+                </svg>
+              </span>
+              <span class="social__text">
+                <span class="social__name">Telegram</span>
+                <span class="social__handle">t.me/GraciaToken</span>
+              </span>
+              <span class="social__arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 17 17 7M9 7h8v8" />
+                </svg>
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer__inner">
+        <div class="footer__brand">
+          <p class="wordmark wordmark--footer">GRACIA</p>
+          <p class="footer__tag">Grace Meets Gain</p>
+        </div>
+
+        <nav class="footer__links" aria-label="Social">
+          <a href="https://x.com/GraciaTokenBSC" target="_blank" rel="noopener noreferrer">X</a>
+          <a href="https://t.me/GraciaToken" target="_blank" rel="noopener noreferrer">Telegram</a>
+          <a href="https://graciatoken.com">graciatoken.com</a>
+        </nav>
+
+        <p class="footer__disclaimer">
+          Gracia Token is not intended as financial advice or an investment guarantee.
+          Cryptocurrency investments carry risk and volatility. Participants should conduct their
+          own research before engaging.
+        </p>
+
+        <p class="footer__meta">&copy; <span id="year">2026</span> Gracia Token &middot; BNB Smart Chain</p>
+      </div>
+    </footer>
+  </body>
+</html>
