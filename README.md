@@ -17,16 +17,20 @@ npm run preview  # serve the built output
 
 ## Deploying
 
-Cloudflare Pages, from the repository root:
+Cloudflare Workers, connected to this repository. `wrangler.jsonc` declares an
+assets-only Worker pointed at `dist/`, so the dashboard needs only:
 
 | Setting | Value |
 | --- | --- |
 | Build command | `npm run build` |
-| Output directory | `dist` |
-| Node version | 20 or newer |
+| Deploy command | `npx wrangler deploy` |
 
-`public/_headers` ships with the build and sets immutable caching for the
-fingerprinted assets and the fonts.
+The Worker name comes from `wrangler.jsonc`, not the dashboard field. `.nvmrc`
+pins Node 22 — Vite 8 needs 20.19 or newer and the build image defaults lower.
+
+`public/_headers` is copied into `dist/` by the build and is honoured by Workers
+static assets, so caching rules ship with the site. Unknown paths return a real
+404 rather than serving the homepage.
 
 Everything resolves from the site root, so if the site is ever served from a
 subpath, change `base` in `vite.config.js` to match.
